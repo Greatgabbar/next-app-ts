@@ -1,28 +1,62 @@
-import type { NextPage } from "next";
-import React, { useState, useEffect } from "react";
+import Checkbox from "@mui/material/Checkbox";
+import Paper from "@mui/material/Paper";
 import Table from "@mui/material/Table";
 import TableBody from "@mui/material/TableBody";
 import TableCell from "@mui/material/TableCell";
 import TableContainer from "@mui/material/TableContainer";
 import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
-import Paper from "@mui/material/Paper";
-import Checkbox from "@mui/material/Checkbox";
+import React, { useEffect, useState } from "react";
+import Search from "../../components/Search/Search";
 
-const Users: NextPage = ({ users }) => {
-  const [userData, setUserData] = useState(users);
+export interface User {
+  id: number;
+  name: string;
+  username: string;
+  email: string;
+  address: Address;
+  phone: string;
+  website: string;
+  company: Company;
+  blocked?: boolean;
+  topUser?: boolean;
+  endTime?: Date;
+}
+export interface Address {
+  street: string;
+  suite: string;
+  city: string;
+  zipcode: string;
+  geo: Geo;
+}
+export interface Geo {
+  lat: string;
+  lng: string;
+}
+export interface Company {
+  name: string;
+  catchPhrase: string;
+  bs: string;
+}
+
+const Users: React.FC<{ users: User[] }> = ({ users }) => {
+  const [userData, setUserData] = useState<User[]>(users);
 
   const handleChange = (id) => {
     const arr = [...userData];
     const i = arr.findIndex((a) => a.id === id);
     arr[i].blocked = !arr[i].blocked;
     if (!arr[i].blocked) {
-      let BlockedUser = JSON.parse(localStorage.getItem("BlockedUser"));
+      const BlockedUser = JSON.parse(
+        localStorage.getItem("BlockedUser") as string
+      );
       const index = BlockedUser?.findIndex((user: any) => user.id === id);
       BlockedUser.splice(index, 1);
       localStorage.setItem("BlockedUser", JSON.stringify(BlockedUser));
     } else {
-      let BlockedUser = JSON.parse(localStorage.getItem("BlockedUser"));
+      let BlockedUser = JSON.parse(
+        localStorage.getItem("BlockedUser") as string
+      );
       console.log(BlockedUser);
       if (!BlockedUser) {
         BlockedUser = [];
@@ -30,7 +64,9 @@ const Users: NextPage = ({ users }) => {
         BlockedUser.push(arr[i]);
         localStorage.setItem("BlockedUser", JSON.stringify(BlockedUser));
       } else {
-        let BlockedUser = JSON.parse(localStorage.getItem("BlockedUser"));
+        const BlockedUser = JSON.parse(
+          localStorage.getItem("BlockedUser") as string
+        );
         arr[i].endTime = new Date(new Date().getTime() + 5 * 60000);
         BlockedUser.push(arr[i]);
         localStorage.setItem("BlockedUser", JSON.stringify(BlockedUser));
@@ -43,7 +79,7 @@ const Users: NextPage = ({ users }) => {
   const handleTop = (id) => {
     const arr = [...userData];
     const index = arr.findIndex((gg) => gg.id === id);
-    let topUser = JSON.parse(localStorage.getItem("topUser"));
+    let topUser = JSON.parse(localStorage.getItem("topUser") as string);
     if (!topUser) {
       topUser = [];
     }
@@ -60,8 +96,8 @@ const Users: NextPage = ({ users }) => {
   };
 
   useEffect(() => {
-    let arr = JSON.parse(localStorage.getItem("BlockedUser"));
-    let topUser = JSON.parse(localStorage.getItem("topUser"));
+    const arr = JSON.parse(localStorage.getItem("BlockedUser") as string);
+    const topUser = JSON.parse(localStorage.getItem("topUser") as string);
     // if (arr) {
     arr?.forEach((data) => {
       const i = users.findIndex((gg) => gg.id === data.id);
@@ -74,11 +110,11 @@ const Users: NextPage = ({ users }) => {
     setUserData(users);
     // }
     setInterval(() => {
-      let arr = JSON.parse(localStorage.getItem("BlockedUser"));
+      const arr = JSON.parse(localStorage.getItem("BlockedUser") as string);
       if (!arr) return;
       const date = new Date();
-      let ids = [];
-      let userdata = [...userData];
+      const ids: (string | number)[] = [];
+      const userdata = [...userData];
       arr.forEach((data) => {
         if (new Date(data.endTime).toLocaleString() === date.toLocaleString()) {
           ids.push(data.id);
@@ -97,6 +133,7 @@ const Users: NextPage = ({ users }) => {
 
   return (
     <div>
+      <Search data={userData} />
       <TableContainer component={Paper}>
         <Table sx={{ minWidth: 650 }} aria-label="simple table">
           <TableHead>
@@ -143,7 +180,6 @@ const Users: NextPage = ({ users }) => {
 export default Users;
 
 export async function getServerSideProps() {
-  console.log(process.env.SERVER_URL);
   const res = await fetch(`${process.env.SERVER_URL}/users`);
   let data = await res.json();
   data = data.map((gg) => {
@@ -153,7 +189,6 @@ export async function getServerSideProps() {
       topUser: false,
     };
   });
-  console.log(data);
   return {
     props: {
       users: data,

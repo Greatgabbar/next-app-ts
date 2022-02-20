@@ -1,7 +1,4 @@
-import type { NextPage } from "next";
 import React from "react";
-import Card from "../../components/Card/card";
-import Link from "next/link";
 import { Typography } from "@mui/material";
 
 interface CardData {
@@ -11,7 +8,7 @@ interface CardData {
   userId: number;
 }
 
-const NewsPage: NextPage = ({ news }) => {
+const NewsPage: React.FC<{ news: CardData }> = ({ news }) => {
   console.log(news);
   return (
     <div
@@ -25,7 +22,7 @@ const NewsPage: NextPage = ({ news }) => {
       }}
     >
       <Typography variant="h2" align="center">
-        Title: {news.title}
+        Title: {news?.title}
       </Typography>
       <Typography variant="body1" align="center">
         Body : {news.body}
@@ -53,10 +50,8 @@ export async function getStaticPaths() {
 }
 
 export async function getStaticProps({ params }) {
-  console.log(process.env.SERVER_URL);
   const res = await fetch(`${process.env.SERVER_URL}/posts/${params.id}`);
   const data = await res.json();
-  console.log(data);
   return {
     props: {
       news: data,

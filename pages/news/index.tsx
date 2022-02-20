@@ -1,7 +1,5 @@
-import type { NextPage } from "next";
 import React from "react";
 import Card from "../../components/Card/card";
-import Link from "next/link";
 interface CardData {
   title: string;
   id: number;
@@ -9,7 +7,7 @@ interface CardData {
   userId: number;
 }
 
-const News: NextPage = ({ news }: [NextPage]) => {
+const News: React.FC<{ news: [CardData] }> = ({ news }) => {
   console.log(news);
   return (
     <div
@@ -32,10 +30,8 @@ const News: NextPage = ({ news }: [NextPage]) => {
 export default News;
 
 export async function getStaticProps() {
-  console.log(process.env.SERVER_URL);
   const res = await fetch(`${process.env.SERVER_URL}/posts`);
   const data = await res.json();
-  console.log(data);
   return {
     props: {
       news: data,
