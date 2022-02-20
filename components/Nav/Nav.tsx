@@ -152,7 +152,7 @@ export default function PersistentDrawerLeft() {
         </DrawerHeader>
         <Divider />
         <List>
-          <Link href={"/users"}>
+          <Link href={"/"}>
             <a>
               <ListItem button>
                 <ListItemIcon>
