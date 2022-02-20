@@ -30,7 +30,7 @@ const TopUsers: React.FC = () => {
             </TableRow>
           </TableHead>
           <TableBody>
-            {users.map((user, i) => (
+            {users?.map((user, i) => (
               <TableRow
                 key={user.id}
                 sx={{ "&:last-child td, &:last-child th": { border: 0 } }}

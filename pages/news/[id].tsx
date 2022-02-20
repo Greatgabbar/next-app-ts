@@ -25,7 +25,7 @@ const NewsPage: React.FC<{ news: CardData }> = ({ news }) => {
         Title: {news?.title}
       </Typography>
       <Typography variant="body1" align="center">
-        Body : {news.body}
+        Body : {news?.body}
       </Typography>
     </div>
   );
@@ -45,7 +45,7 @@ export async function getStaticPaths() {
   });
   return {
     paths,
-    fallback: true,
+    fallback: false,
   };
 }
 
