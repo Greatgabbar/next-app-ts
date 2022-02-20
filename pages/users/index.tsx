@@ -40,13 +40,39 @@ const Users: NextPage = ({ users }) => {
     setUserData(arr);
   };
 
+  const handleTop = (id) => {
+    const arr = [...userData];
+    const index = arr.findIndex((gg) => gg.id === id);
+    let topUser = JSON.parse(localStorage.getItem("topUser"));
+    if (!topUser) {
+      topUser = [];
+    }
+    arr[index].topUser = !arr[index].topUser;
+    if (!arr[index].topUser) {
+      const i = topUser.findIndex((gg) => gg.id === arr[index].id);
+      topUser.splice(i, 1);
+      setUserData(arr);
+      return localStorage.setItem("topUser", JSON.stringify(topUser));
+    }
+    topUser.push(arr[index]);
+    localStorage.setItem("topUser", JSON.stringify(topUser));
+    setUserData(arr);
+  };
+
   useEffect(() => {
     let arr = JSON.parse(localStorage.getItem("BlockedUser"));
-    arr.forEach((data) => {
+    let topUser = JSON.parse(localStorage.getItem("topUser"));
+    // if (arr) {
+    arr?.forEach((data) => {
       const i = users.findIndex((gg) => gg.id === data.id);
       users[i].blocked = true;
     });
+    topUser?.forEach((data) => {
+      const i = users.findIndex((gg) => gg.id === data.id);
+      users[i].topUser = true;
+    });
     setUserData(users);
+    // }
     setInterval(() => {
       let arr = JSON.parse(localStorage.getItem("BlockedUser"));
       if (!arr) return;
@@ -79,10 +105,11 @@ const Users: NextPage = ({ users }) => {
               <TableCell>Name</TableCell>
               <TableCell>Email</TableCell>
               <TableCell>Block/Unblock</TableCell>
+              <TableCell>Top User</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
-            {users.map((user) => (
+            {users.map((user, i) => (
               <TableRow
                 key={user.id}
                 sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
@@ -96,6 +123,12 @@ const Users: NextPage = ({ users }) => {
                   <Checkbox
                     checked={user.blocked}
                     onChange={() => handleChange(user.id)}
+                  />
+                </TableCell>
+                <TableCell>
+                  <Checkbox
+                    checked={user.topUser}
+                    onChange={() => handleTop(user.id)}
                   />
                 </TableCell>
               </TableRow>
@@ -117,6 +150,7 @@ export async function getServerSideProps() {
     return {
       ...gg,
       blocked: false,
+      topUser: false,
     };
   });
   console.log(data);
