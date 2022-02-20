@@ -11,7 +11,7 @@ interface CardData {
   userId: number;
 }
 
-const NewsPage: NextPage = ({ news }: [CardData]) => {
+const NewsPage: NextPage<[CardData]> = ({ news }) => {
   console.log(news);
   return (
     <div
